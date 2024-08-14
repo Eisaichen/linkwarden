@@ -11,6 +11,7 @@ import handleArchivePreview from "./preservationScheme/handleArchivePreview";
 import handleScreenshotAndPdf from "./preservationScheme/handleScreenshotAndPdf";
 import imageHandler from "./preservationScheme/imageHandler";
 import pdfHandler from "./preservationScheme/pdfHandler";
+import fs from "fs";
 
 type LinksAndCollectionAndOwner = Link & {
   collection: Collection & {
@@ -19,6 +20,7 @@ type LinksAndCollectionAndOwner = Link & {
 };
 
 const BROWSER_TIMEOUT = Number(process.env.BROWSER_TIMEOUT) || 5;
+const cookiesFilePath = '/data/data/cookies.txt';
 
 export default async function archiveHandler(link: LinksAndCollectionAndOwner) {
   const timeoutPromise = new Promise((_, reject) => {
@@ -116,7 +118,21 @@ export default async function archiveHandler(link: LinksAndCollectionAndOwner) {
           return;
         } else if (link.url) {
           // archive url
-
+          
+          // Check if cookies file exists
+          if (fs.existsSync(cookiesFilePath)) {
+            const cookies = parseCookiesFromFile(cookiesFilePath);
+            if (cookies.length > 0) {
+              try {
+                await context.addCookies(cookies);
+              } catch (error) {
+                console.error("Error adding cookies:", error);
+              }
+            }
+          } else {
+            console.warn(`Cookies file not found at path: ${cookiesFilePath}`);
+          }
+          
           await page.goto(link.url, { waitUntil: "domcontentloaded" });
 
           const content = await page.content();
@@ -193,4 +209,26 @@ export default async function archiveHandler(link: LinksAndCollectionAndOwner) {
 
     await browser.close();
   }
+}
+
+function parseCookiesFromFile(filePath: string) {
+  const rawCookies = fs.readFileSync(filePath, 'utf-8').split('\n').slice(4); // Skip the header lines
+  const cookies = rawCookies.map(line => {
+    const [domain, , path, secure, expiry, name, value] = line.split(/\s+/);
+
+    if (!domain || !path || !secure || !expiry || !name || !value) {
+      return null;
+    }
+
+    return {
+      name: name,
+      value: value,
+      domain: domain,
+      path: path,
+      secure: secure.toLowerCase() === 'true',
+      expires: expiry === '0' ? undefined : Number(expiry)
+    };
+  }).filter(cookie => cookie !== null); // Filter out null values
+
+  return cookies as { name: string, value: string, domain: string, path: string, secure: boolean, expires?: number }[];
 }
