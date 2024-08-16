@@ -16,7 +16,6 @@ USER node
 # Increase timeout to pass github actions arm64 build
 RUN --mount=type=cache,sharing=locked,target=/usr/local/share/.cache/yarn curl https://sh.rustup.rs -sSf | bash -s -- -y && \
     cargo install monolith && \
-    yarn add sharp && \
     yarn install --network-timeout 10000000 && \
     yarn playwright install && \
     yarn cache clean
