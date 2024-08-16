@@ -40,5 +40,6 @@ jobs:
         with:
           context: .
           platforms: linux/amd64,linux/arm64
+          pull: true
           push: true
           tags: eisai/linkwarden:latest,eisai/linkwarden:${{ github.sha }}
