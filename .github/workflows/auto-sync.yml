@@ -13,7 +13,7 @@ jobs:
         uses: lewagon/wait-on-check-action@v1.3.4
         with:
           ref: ${{ github.ref }}
-          running-workflow-name: 'dockerl'
+          running-workflow-name: 'docker'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           wait-interval: 10
 
