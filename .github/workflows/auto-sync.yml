@@ -21,3 +21,4 @@ jobs:
         with:
           base: main
           head: main
+          ignore_fail: true
