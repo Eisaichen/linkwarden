@@ -1,14 +1,14 @@
 name: Docker Image CI
 
 on:
-  push:
+  pull_request_target:
     branches: [ main ]
   workflow_dispatch:
 
 jobs:
   docker:
     name: build and push
-    #if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
