@@ -18,7 +18,7 @@ jobs:
 
     steps:
       - name: disable fork sync
-        run: 'curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GH_TOKEN}" -H "X-GitHub-Api-Version: 2022-11-28" -X PUT https://api.github.com/repos/Eisaichen/linkwarden/actions/workflows/auto-sync.yml/disable'
+        run: 'curl -s -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GH_TOKEN}" -H "X-GitHub-Api-Version: 2022-11-28" -X PUT https://api.github.com/repos/Eisaichen/linkwarden/actions/workflows/auto-sync.yml/disable'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -46,3 +46,8 @@ jobs:
           pull: true
           push: true
           tags: eisai/linkwarden:latest,eisai/linkwarden:${{ github.sha }}
+
+      - name: enable fork sync
+        run: 'curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GH_TOKEN}" -H "X-GitHub-Api-Version: 2022-11-28" -X PUT https://api.github.com/repos/Eisaichen/linkwarden/actions/workflows/auto-sync.yml/enable'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
