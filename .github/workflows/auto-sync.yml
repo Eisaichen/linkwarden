@@ -9,14 +9,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Avoid Docker builder
-        uses: lewagon/wait-on-check-action@v1.3.4
-        with:
-          ref: ${{ github.ref }}
-          check-name: 'docker'
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 10
-
       - uses: tgymnich/fork-sync@v2.0
         with:
           base: main
